@@ -1,7 +1,7 @@
 PHP CLI Sudoku Solver
 =====================
 
-This is a very basic Sudoku solver written in PHP. Written as a task during an interview ("Your task is to write a solver for today's Sudoko...")
+This is a very basic Sudoku solver written in PHP. Written as a task during an interview ("Your task is to write a solver for today's local news Sudoku...")
 
 Usage
 -----
