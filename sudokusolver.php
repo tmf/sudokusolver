@@ -13,18 +13,17 @@ $numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
  * input puzzle with known values. 0 represent unknown values
  */
 $puzzle = [
-    [0, 0, 0, 8, 4, 1, 0, 0, 0],
-    [0, 5, 0, 0, 0, 9, 0, 7, 0],
-    [0, 0, 0, 3, 0, 0, 0, 0, 2],
+    [0, 0, 0,   8, 4, 1,   0, 0, 0],
+    [0, 5, 0,   0, 0, 9,   0, 7, 0],
+    [0, 0, 0,   3, 0, 0,   0, 0, 2],
 
-    [1, 7, 0, 0, 0, 0, 8, 0, 4],
-    [2, 0, 0, 0, 0, 0, 0, 0, 7],
-    [4, 0, 6, 0, 0, 0, 0, 2, 5],
+    [1, 7, 0,   0, 0, 0,   8, 0, 4],
+    [2, 0, 0,   0, 0, 0,   0, 0, 7],
+    [4, 0, 6,   0, 0, 0,   0, 2, 5],
 
-    [7, 0, 0, 0, 0, 3, 0, 0, 0],
-    [0, 3, 0, 9, 0, 0, 0, 6, 0],
-    [0, 0, 0, 7, 5, 2, 4, 0, 0],
-
+    [0, 0, 0,   0, 0, 3,   0, 0, 0],
+    [0, 3, 0,   9, 0, 0,   0, 6, 0],
+    [0, 0, 0,   7, 5, 2,   4, 0, 0],
 ];
 
 /**
@@ -220,6 +219,6 @@ function printSudoku($puzzle)
 
 // print the input puzzle
 printSudoku($puzzle);
-// print the solution of the input puzzle
+// print a solution of the input puzzle
 printSudoku(solve($puzzle, $numbers));
 
