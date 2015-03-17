@@ -86,13 +86,22 @@ class Sudoku
 
     public function isComplete()
     {
+        return $this->countUnkownValues() == 0;
+    }
+
+    public function countUnkownValues()
+    {
+        $unknownValues = 0;
+
         foreach ($this->getGrid() as $line) {
-            if (array_search(static::SYMBOL_UNKNOWN, $line) !== false) {
-                return false;
+            $frequencies = array_count_values($line);
+
+            if (isset($frequencies[Sudoku::SYMBOL_UNKNOWN])) {
+                $unknownValues += $frequencies[Sudoku::SYMBOL_UNKNOWN];
             }
         }
 
-        return true;
+        return $unknownValues;
     }
 
     public function isSymbolKnown($row, $column)

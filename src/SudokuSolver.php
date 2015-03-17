@@ -13,7 +13,6 @@ namespace Tmf\Sudoku;
  */
 class SudokuSolver
 {
-
     /**
      * @var Sudoku $sudoku
      */
@@ -27,10 +26,12 @@ class SudokuSolver
         $this->sudoku = $sudoku;
     }
 
-    public function solve()
+    public function solve($depth=0)
     {
         $this->solveUnambiguousValues();
+
         $currentGrid = $this->getSudoku()->getGrid();
+        $availableSymbolsRef = [];
         for ($row = 0; $row < $this->getSudoku()->getGridWidth(); $row++) {
             for ($column = 0; $column <  $this->getSudoku()->getGridHeight(); $column++) {
                 if (!$this->getSudoku()->isSymbolKnown($row, $column)) {
@@ -39,23 +40,33 @@ class SudokuSolver
                     if(count($availableSymbols) == 0){
                         return;
                     }
-                    //echo 'trying out (' . implode(',', $availableSymbols) . ') in [' . $row . $column . ']' . PHP_EOL;
-                    foreach($availableSymbols as $symbol){
-                        $this->getSudoku()->setSymbol($row, $column, $symbol);
-                        //$this->getSudoku()->render();
-                        //fgetc(STDIN);
-                        $this->solve();
-                        if($this->getSudoku()->isComplete()){
-                            return;
-                        }else{
-                            $this->getSudoku()->setGrid($currentGrid);
-                        }
 
-                    }
+                    array_push($availableSymbolsRef, ['row' => $row, 'column' => $column, 'available' => $availableSymbols]);
                 }
             }
         }
 
+        usort($availableSymbolsRef, function($a, $b){
+            $countA = count($a['available']);
+            $countB = count($b['available']);
+            if($countA == $countB){
+                return 0;
+            }
+
+            return ($countA < $countB) ? -1 : 1;
+        });
+        foreach($availableSymbolsRef as $ref){
+            foreach($ref['available'] as $symbol){
+                $this->getSudoku()->setSymbol($ref['row'], $ref['column'], $symbol);
+
+                $this->solve($depth++);
+                if($this->getSudoku()->isComplete()){
+                    return;
+                }else{
+                    $this->getSudoku()->setGrid($currentGrid);
+                }
+            }
+        }
     }
 
     /**
@@ -63,9 +74,21 @@ class SudokuSolver
      */
     public function solveUnambiguousValues()
     {
-
         do {
             $foundUnambiguousSymbols = false;
+            for ($row = 0; $row < $this->getSudoku()->getGridWidth(); $row++) {
+                for ($column = 0; $column < $this->getSudoku()->getGridHeight(); $column++) {
+                    if(!$this->getSudoku()->isSymbolKnown($row, $column)){
+                        $availableSymbols = $this->availableSymbolsInCell($row, $column);
+                        if(count($availableSymbols)==1){
+                            $this->getSudoku()->setSymbol($row, $column, reset($availableSymbols));
+                            $foundUnambiguousSymbols = true;
+                        }
+                    }
+                }
+            }
+
+
             for ($rowOffset = 0; $rowOffset < $this->getSudoku()->getGridWidth(); $rowOffset += $this->getSudoku()->getSubGridWidth()) {
                 for ($columnOffset = 0; $columnOffset < $this->getSudoku()->getGridHeight(); $columnOffset += $this->getSudoku()->getSubGridHeight()) {
                     $foundUnambiguousSymbols = $foundUnambiguousSymbols || $this->solveUnambiguousSymbolsInSubGrid($rowOffset, $columnOffset);
@@ -83,26 +106,28 @@ class SudokuSolver
     {
         $foundUnambiguousSymbols = false;
         $availableSymbolsPerSubGridCell = [];
-        $availableSymbolsPerSubGridCellCoordinates = [];
+
         for ($rowOffset = $row; $rowOffset < $row + $this->getSudoku()->getSubGridWidth(); $rowOffset++) {
             for ($columnOffset = $column; $columnOffset < $column + $this->getSudoku()->getSubGridHeight(); $columnOffset++) {
                 if (!$this->getSudoku()->isSymbolKnown($rowOffset, $columnOffset)) {
-                    array_push($availableSymbolsPerSubGridCell, $this->availableSymbolsInCell($rowOffset, $columnOffset));
-                    array_push($availableSymbolsPerSubGridCellCoordinates, [$rowOffset, $columnOffset]);
+                    array_push($availableSymbolsPerSubGridCell, ['row' => $rowOffset, 'column' => $columnOffset, 'available' => $this->availableSymbolsInCell($rowOffset, $columnOffset)]);
                 }
             }
         }
+
         for ($i = 0; $i < count($availableSymbolsPerSubGridCell); $i++) {
-            $symbols = $availableSymbolsPerSubGridCell[$i];
+            $symbols = $availableSymbolsPerSubGridCell[$i]['available'];
             for ($j = 0; $j < count($availableSymbolsPerSubGridCell); $j++) {
                 if ($i != $j) {
-                    $symbols = array_diff($symbols, $availableSymbolsPerSubGridCell[$j]);
+                    $symbols = array_diff($symbols, $availableSymbolsPerSubGridCell[$j]['available']);
+                }
+                if(count($symbols) == 0){
+                    break;
                 }
             }
 
             if (count($symbols) == 1) {
-                list($foundSymbolRow, $foundSymbolColumn) = $availableSymbolsPerSubGridCellCoordinates[$i];
-                $this->getSudoku()->setSymbol($foundSymbolRow, $foundSymbolColumn, reset($symbols));
+                $this->getSudoku()->setSymbol($availableSymbolsPerSubGridCell[$i]['row'], $availableSymbolsPerSubGridCell[$i]['column'], reset($symbols));
                 $foundUnambiguousSymbols = true;
             }
 
