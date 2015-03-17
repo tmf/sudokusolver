@@ -1,0 +1,43 @@
+#!/usr/bin/env php
+<?php
+/**
+ * @autor Tom Forrer <tom.forrer@gmail.com>
+ * @copyright Copyright (c) 2015 Tom Forrer (http://github.com/tmf)
+ */
+
+use Tmf\Sudoku\Sudoku,
+    Tmf\Sudoku\SudokuSolver;
+
+require __DIR__ . '/../vendor/autoload.php';
+
+/**
+ * input puzzle with known values. 0 represent unknown values
+ */
+$difficultpuzzle = [
+    [0, 0, 3,   0, 0, 7,   0, 0, 1],
+    [0, 6, 0,   0, 2, 0,   0, 9, 0],
+    [1, 0, 0,   6, 0, 0,   8, 0, 0],
+    [3, 0, 0,   2, 0, 0,   9, 0, 0],
+    [0, 4, 0,   0, 1, 0,   0, 3, 0],
+    [0, 0, 5,   0, 0, 3,   0, 0, 4],
+    [0, 0, 7,   0, 0, 1,   0, 0, 5],
+    [0, 9, 0,   0, 8, 0,   0, 6, 0],
+    [5, 0, 0,   3, 0, 0,   1, 0, 0]
+];
+$simplepuzzle = [
+    [0, 0, 0,   8, 4, 1,   0, 0, 0],
+    [0, 5, 0,   0, 0, 9,   0, 7, 0],
+    [0, 0, 0,   3, 0, 0,   0, 0, 2],
+    [1, 7, 0,   0, 0, 0,   8, 0, 4],
+    [2, 0, 0,   0, 0, 0,   0, 0, 7],
+    [4, 0, 6,   0, 0, 0,   0, 2, 5],
+    [0, 0, 0,   0, 0, 3,   0, 0, 0],
+    [0, 3, 0,   9, 0, 0,   0, 6, 0],
+    [0, 0, 0,   7, 5, 2,   4, 0, 0],
+];
+$sudoku = new Sudoku($simplepuzzle);
+$solver = new SudokuSolver($sudoku);
+$sudoku->render();
+
+$solver->solve();
+$sudoku->render();

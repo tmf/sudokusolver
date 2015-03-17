@@ -1,0 +1,17 @@
+{
+  "name": "tmf/sudokusolver",
+  "description": "A simple CLI sudoku solver written in PHP",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Tom Forrer",
+      "email": "tom.forrer@gmail.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Tmf\\Sudoku\\": "src"
+    }
+  }
+}
